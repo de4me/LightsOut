@@ -66,7 +66,7 @@ class DisplaysViewModel: ObservableObject {
             throw DisplayError(msg: "Failed to disconnect '\(display.name)'.")
         }
         
-        let completeStatus = CGCompleteDisplayConfiguration(config, .forAppOnly)
+        let completeStatus = CGCompleteDisplayConfiguration(config, .permanently)
         guard completeStatus == .success else {
             throw DisplayError(msg: "Failed to finish configuring '\(display.name)'.")
         }
@@ -136,7 +136,7 @@ extension DisplaysViewModel {
             )
         }
         
-        let completeStatus = CGCompleteDisplayConfiguration(config, .forAppOnly)
+        let completeStatus = CGCompleteDisplayConfiguration(config, .permanently)
         guard completeStatus == .success else {
             throw DisplayError(
                 msg: "Failed to complete configuration for '\(display.name)'.")
@@ -188,7 +188,7 @@ extension DisplaysViewModel {
             ])
         }
         
-        let completeConfigError = CGCompleteDisplayConfiguration(config, .forAppOnly)
+        let completeConfigError = CGCompleteDisplayConfiguration(config, .permanently)
         guard completeConfigError == .success else {
             throw NSError(domain: NSOSStatusErrorDomain, code: Int(completeConfigError.rawValue), userInfo: [
                 NSLocalizedDescriptionKey: "Failed to complete display configuration."
@@ -220,7 +220,7 @@ extension DisplaysViewModel {
             )
         }
 
-        let completeConfigError = CGCompleteDisplayConfiguration(config, .forAppOnly)
+        let completeConfigError = CGCompleteDisplayConfiguration(config, .permanently)
         guard completeConfigError == .success else {
             throw NSError(
                 domain: NSOSStatusErrorDomain,
