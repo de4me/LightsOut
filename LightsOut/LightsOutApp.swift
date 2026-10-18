@@ -1,6 +1,5 @@
 import SwiftUI
 import AppKit
-import Sparkle
 
 @main
 struct LightsOutApp: App {
@@ -18,7 +17,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var popover: NSPopover!
     var eventMonitor: Any?
     let displaysViewModel = DisplaysViewModel()
-    var updateController: SPUStandardUpdaterController!
     var contextMenuManager: ContextMenuManager!
     
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -39,15 +37,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             }
         }
         
-        updateController = SPUStandardUpdaterController(startingUpdater: true, updaterDelegate: nil, userDriverDelegate: nil)
-        
-//        #if !DEBUG
-        if updateController.updater.automaticallyChecksForUpdates {
-            updateController.updater.checkForUpdatesInBackground()
-        }
-//        #endif
-        
-        contextMenuManager = ContextMenuManager(updateController: updateController.updater, statusItem: statusItem)
+        contextMenuManager = ContextMenuManager(statusItem: statusItem)
     }
 
     @objc func handleClick(_ sender: NSStatusBarButton) {
