@@ -12,6 +12,7 @@ class DisplaysViewModel: ObservableObject {
     @Published var displays: [DisplayInfo] = []
     private var gammaService = GammaUpdateService()
     private var arrengementCache = DisplayArrangementCacheService()
+    private var monitorService = MonitorService()
     
     init() {
         fetchDisplays()
@@ -19,37 +20,23 @@ class DisplaysViewModel: ObservableObject {
     
     func fetchDisplays() {
         print("Fetching displays.")
-        var displayCount: UInt32 = 0
-        CGGetActiveDisplayList(0, nil, &displayCount)
-        var activeDisplays = [CGDirectDisplayID](repeating: 0, count: Int(displayCount))
-        CGGetActiveDisplayList(displayCount, &activeDisplays, &displayCount)
-        
-        var new_displays: Set<DisplayInfo> = Set()
-        
+        let activeDisplays = monitorService.activeMonitors
+        let allDisplays = monitorService.monitors
         let primaryDisplayID = CGMainDisplayID()
         
-        new_displays = Set(activeDisplays.compactMap { displayID in
-            var displayName = "Display \(displayID)"
-            if let screen = NSScreen.screens.first(where: { $0.displayID == displayID }) {
-                displayName = screen.localizedName
-            }
-            return DisplayInfo(
-                id: displayID,
-                name: displayName,
-                state: .active,
-                isPrimary: displayID == primaryDisplayID
-            )
-        })
+        //save all monitors
+        monitorService.monitors = allDisplays
         
-        // Ensuring the off/pending displays are not "deleted" - manually adding them to the new list.
-        for display in displays {
-            if display.state.isOff() || display.state == .pending {
-                display.isPrimary = false
-                new_displays.insert(display)
-            }
+        let all_displays = allDisplays.map { monitor in
+            DisplayInfo(
+                id: monitor.displayId,
+                name: monitor.name,
+                state: activeDisplays.contains(monitor) ? .active : .disconnected,
+                isPrimary: monitor.displayId == primaryDisplayID
+            )
         }
         
-        displays = Array(new_displays)
+        displays = all_displays.combine(with: displays)
         
         displays.sort {
             if $0.isPrimary {
